@@ -1,15 +1,55 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
 import { logout } from "../../store/authSlice";
 import { useRouter } from "next/navigation";
 
+type Post = {
+  id: number;
+  title: string;
+  body: string;
+};
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  company: { name: string };
+};
+
 export default function DashboardPage() {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Fetch 5 posts
+        const postsRes = await fetch(
+          "https://jsonplaceholder.typicode.com/posts?_limit=5"
+        );
+        const postsData = await postsRes.json();
+        setPosts(postsData);
+
+        // Fetch users
+        const usersRes = await fetch(
+          "https://jsonplaceholder.typicode.com/users?_limit=5"
+        );
+        const usersData = await usersRes.json();
+        setUsers(usersData);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      }
+    }
+    fetchData();
+  }, []);
 
   function handleLogout() {
     dispatch(logout());
@@ -34,12 +74,39 @@ export default function DashboardPage() {
         </header>
 
         {/* Main content */}
-        <main className="p-6">
+        <main className="p-6 space-y-6">
+          {/* Posts section */}
           <div className="rounded-lg bg-white p-6 shadow">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Dashboard Content
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">
+              Latest Posts
             </h2>
-            <p className="mt-2 text-gray-600">fetch real data here 🚀</p>
+            <ul className="space-y-3">
+              {posts.map((post) => (
+                <li
+                  key={post.id}
+                  className="rounded border border-gray-200 p-3 hover:bg-gray-50"
+                >
+                  <h3 className="font-medium text-gray-800">{post.title}</h3>
+                  <p className="text-sm text-gray-600">{post.body}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Users section */}
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">
+              Team Members
+            </h2>
+            <ul className="divide-y divide-gray-200">
+              {users.map((user) => (
+                <li key={user.id} className="py-3">
+                  <p className="font-medium text-gray-800">{user.name}</p>
+                  <p className="text-sm text-gray-600">{user.email}</p>
+                  <p className="text-xs text-gray-500">{user.company.name}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </main>
       </div>
