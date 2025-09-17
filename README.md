@@ -1,5 +1,3 @@
-Perfect 👌 here’s your complete README.md, polished and ready to paste:
-
 🚀 Auth Dashboard
 
 A simple Next.js + Redux Toolkit authentication dashboard with login, signup, and protected routes.
@@ -30,14 +28,11 @@ Cypress (end-to-end tests)
 
 ⚡ Features
 
-✅ Login with mock credentials
-
-✅ Signup form with email + password confirmation validation
-
+✅ Signup with email + password (confirmation + validation)
+✅ Login with stored user credentials (saved in localStorage)
+✅ Error handling for invalid login or duplicate signup
 ✅ Redirects unauthenticated users back to /login
-
 ✅ Redux state persists session until logout
-
 ✅ Basic dashboard after login
 
 🛠 Installation
@@ -66,15 +61,15 @@ Cypress → covers the full authentication flow:
 
 Load the login page
 
-Log in with valid credentials
+Sign up with a new account
+
+Log in with that account
 
 Log out and return to login
 
 Prevent access to dashboard if not authenticated
 
-Show error on invalid login attempt
-
-Validate signup (email + password confirmation)
+Show errors on invalid inputs
 
 Run tests
 
@@ -90,16 +85,9 @@ npx cypress open
 
 npx cypress run
 
-🔑 Demo Credentials
-
-Use these mock credentials for testing:
-
-Email: eve.holt@reqres.in
-Password: SuperSecure!123
-
 🚀 Deployment
 
-Deployed with Vercel → [your live link here]
+Deployed with Vercel → https://kevs-auth-dashboard.vercel.app/login
 
 📌 Next Steps
 
