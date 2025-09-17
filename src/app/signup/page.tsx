@@ -5,6 +5,11 @@ import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useRouter } from "next/navigation";
 
+type User = {
+  email: string;
+  password: string;
+};
+
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,13 +23,12 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
 
-    // Basic validation
+    // Regex for email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Invalid email address");
       return;
     }
-
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
@@ -34,7 +38,23 @@ export default function SignupPage() {
       return;
     }
 
-    // Mock registration → log user in immediately
+    // Get existing users from localStorage
+    const storedUsers: User[] = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
+
+    // Check for duplicate email
+    const userExists = storedUsers.some((user: User) => user.email === email);
+    if (userExists) {
+      setError("User already exists");
+      return;
+    }
+
+    // Add new user
+    const updatedUsers = [...storedUsers, { email, password }];
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    // Auto-login new user
     dispatch(login({ token: "fake-jwt-token", user: { name: email } }));
     router.push("/dashboard");
   }
