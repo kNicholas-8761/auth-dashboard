@@ -81,6 +81,13 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
+        {/* Link to signup */}
+        <p className="mt-4 text-sm text-center text-gray-600">
+          Don’t have an account?{" "}
+          <a href="/signup" className="text-blue-600 hover:underline">
+            Sign Up
+          </a>
+        </p>
 
         {/* Hint for testing */}
         <p className="mt-4 text-xs text-gray-500 text-center">
