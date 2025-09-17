@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError("");
 
     // ✅ Mock login
-    if (email === "eve.holt@reqres.in" && password === "cityslicka") {
+    if (email === "eve.holt@reqres.in" && password === "HireMe2025!") {
       dispatch(login({ token: "fake-jwt-token", user: { name: email } }));
       router.push("/dashboard");
     } else {
@@ -65,7 +65,7 @@ export default function LoginPage() {
                          focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="cityslicka"
+              placeholder="HireMe2025!"
               required
             />
           </div>
@@ -85,7 +85,7 @@ export default function LoginPage() {
         {/* Hint for testing */}
         <p className="mt-4 text-xs text-gray-500 text-center">
           Demo login: <strong>eve.holt@reqres.in</strong> /{" "}
-          <strong>cityslicka</strong>
+          <strong>HireMe2025!</strong>
         </p>
       </div>
     </div>
