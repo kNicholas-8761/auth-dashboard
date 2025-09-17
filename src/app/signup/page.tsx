@@ -19,10 +19,12 @@ export default function SignupPage() {
     setError("");
 
     // Basic validation
-    if (!email.includes("@")) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       setError("Invalid email address");
       return;
     }
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
@@ -46,7 +48,7 @@ export default function SignupPage() {
           Sign Up
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
