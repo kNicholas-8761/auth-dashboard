@@ -67,7 +67,7 @@ export default function DashboardPage() {
           className="flex items-center justify-between bg-white px-6 py-4 shadow"
           role="banner"
         >
-          <h1 className="text-base md:text-xl font-bold text-gray-800">
+          <h1 className="text-sm md:text-xl font-bold text-gray-800">
             Auth Dashboard
           </h1>
           <div className="flex items-center gap-4">
