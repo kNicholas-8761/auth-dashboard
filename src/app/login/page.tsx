@@ -5,6 +5,11 @@ import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useRouter } from "next/navigation";
 
+type User = {
+  email: string;
+  password: string;
+};
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,27 +22,36 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    // ✅ Mock login
-    if (email === "eve.holt@reqres.in" && password === "HireMe2025!") {
-      dispatch(login({ token: "fake-jwt-token", user: { name: email } }));
+    // ✅ Get stored users from localStorage
+    const storedUsers: User[] = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
+
+    // ✅ Find a match
+    const user = storedUsers.find(
+      (user: User) => user.email === email && user.password === password
+    );
+
+    if (user) {
+      // Success → log in and redirect
+      dispatch(login({ token: "fake-jwt-token", user: { name: user.email } }));
       router.push("/dashboard");
     } else {
-      setError("Invalid credentials");
+      // Invalid
+      setError("Invalid email or password");
     }
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
-      {/* App title for branding */}
       <h1 className="mb-8 text-3xl font-bold text-blue-600">Auth Dashboard</h1>
 
-      {/* Login card */}
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-md">
         <h2 className="mb-6 text-xl font-semibold text-center text-gray-800">
           Sign In
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -49,7 +63,7 @@ export default function LoginPage() {
                          focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="eve.holt@reqres.in"
+              placeholder="Enter email"
               required
             />
           </div>
@@ -65,12 +79,12 @@ export default function LoginPage() {
                          focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="HireMe2025!"
+              placeholder="Enter password"
               required
             />
           </div>
 
-          {/* Error message */}
+          {/* Error */}
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           {/* Submit */}
@@ -81,18 +95,12 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
-        {/* Link to signup */}
-        <p className="mt-4 text-sm text-center text-gray-600">
-          Don’t have an account?{" "}
-          <a href="/signup" className="text-blue-600 hover:underline">
-            Sign Up
-          </a>
-        </p>
 
-        {/* Hint for testing */}
         <p className="mt-4 text-xs text-gray-500 text-center">
-          Demo login: <strong>eve.holt@reqres.in</strong> /{" "}
-          <strong>HireMe2025!</strong>
+          Or{" "}
+          <a href="/signup" className="text-blue-600 hover:underline">
+            create an account
+          </a>
         </p>
       </div>
     </div>
