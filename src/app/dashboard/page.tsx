@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
 import { logout } from "../../store/authSlice";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 // ✅ Define types
 type Post = {
@@ -54,7 +55,8 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-  function handleLogout() {
+  async function handleLogout() {
+    await supabase.auth.signOut();
     dispatch(logout());
     router.push("/login");
   }
