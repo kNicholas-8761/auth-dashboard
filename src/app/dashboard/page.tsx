@@ -56,9 +56,13 @@ export default function DashboardPage() {
   }, []);
 
   async function handleLogout() {
-    await supabase.auth.signOut();
-    dispatch(logout());
-    router.push("/login");
+    try {
+      await supabase.auth.signOut();
+      dispatch(logout());
+      router.push("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   }
 
   return (
