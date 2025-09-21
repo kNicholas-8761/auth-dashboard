@@ -1,25 +1,24 @@
 "use client";
 
 import { Provider, useDispatch } from "react-redux";
-import { store } from "../store/store";
+import { store, AppDispatch } from "../store/store";
 import { useEffect } from "react";
-import { loadAuth } from "../store/authSlice";
+import { restoreSession } from "../store/authSlice";
 
-function InitAuth() {
-  const dispatch = useDispatch();
+function AuthLoader({ children }: { children: React.ReactNode }) {
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(loadAuth());
+    dispatch(restoreSession());
   }, [dispatch]);
 
-  return null;
+  return <>{children}</>;
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      <InitAuth />
-      {children}
+      <AuthLoader>{children}</AuthLoader>
     </Provider>
   );
 }
