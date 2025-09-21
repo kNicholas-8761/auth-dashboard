@@ -1,14 +1,10 @@
 "use client";
 
+import { supabase } from "@/lib/supabaseClient";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useRouter } from "next/navigation";
-
-type User = {
-  email: string;
-  password: string;
-};
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -19,7 +15,7 @@ export default function SignupPage() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
@@ -38,25 +34,34 @@ export default function SignupPage() {
       return;
     }
 
-    // Get existing users from localStorage
-    const storedUsers: User[] = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    // Check for duplicate email
-    const userExists = storedUsers.some((user: User) => user.email === email);
-    if (userExists) {
-      setError("User already exists");
-      return;
+      if (error) {
+        setError(error.message);
+        return;
+      }
+
+      if (data.user) {
+        // ✅ Auto-login new user (if session returned)
+        dispatch(
+          login({
+            token: data.session?.access_token ?? "",
+            user: {
+              name: data.user.email ?? "",
+            },
+          })
+        );
+
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("Unexpected signup error");
+      console.error("Unexpected signup error:", err);
     }
-
-    // Add new user
-    const updatedUsers = [...storedUsers, { email, password }];
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    // Auto-login new user
-    dispatch(login({ token: "fake-jwt-token", user: { name: email } }));
-    router.push("/dashboard");
   }
 
   return (
