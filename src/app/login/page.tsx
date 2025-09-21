@@ -1,14 +1,10 @@
 "use client";
 
+import { supabase } from "@/lib/supabaseClient";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useRouter } from "next/navigation";
-
-type User = {
-  email: string;
-  password: string;
-};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,27 +14,35 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
-    // ✅ Get stored users from localStorage
-    const storedUsers: User[] = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    // ✅ Find a match
-    const user = storedUsers.find(
-      (user: User) => user.email === email && user.password === password
-    );
+      if (error) {
+        setError(error.message);
+        return;
+      }
 
-    if (user) {
-      // Success → log in and redirect
-      dispatch(login({ token: "fake-jwt-token", user: { name: user.email } }));
-      router.push("/dashboard");
-    } else {
-      // Invalid
-      setError("Invalid email or password");
+      if (data.session && data.user) {
+        dispatch(
+          login({
+            token: data.session.access_token,
+            user: {
+              name: data.user.email ?? "", // fallback to empty string
+            },
+          })
+        );
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("Unexpected login error");
+      console.error("Unexpected login error:", err);
     }
   }
 
